@@ -4,7 +4,7 @@
 FIAP — Engenharia de Software, 3º ano de Fev
 
 **Integrantes:** Alice Santos Bulhões (RM554499) · Eduardo Oliveira Cardoso Madid (RM556349) · Guilherme da Cunha Melo (RM555310) · Nicolas Haubricht Hainfellner (RM556259)
-**Repositório:** `[PREENCHER: link do GitHub]`
+**Repositório:** https://github.com/L-A-N-E/GS-Machine-Learning-2-26
 **Vídeo (até 5 min, não listado):** `[PREENCHER: link do YouTube]`
 
 ---
