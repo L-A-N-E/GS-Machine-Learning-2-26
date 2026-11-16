@@ -22,7 +22,7 @@ Evitar a armadilha de treinar um modelo que apenas repete o que o GTFS já infor
 
 A equipe escolheu, entre três alternativas apresentadas, a combinação **tempo de espera (headway) mais agrupamento das paradas**, em vez de prever apenas o tempo de viagem entre paradas ou apenas o tempo de espera. O critério foi cobrir as duas perguntas que o projeto precisa responder: quanto o cidadão espera, e por onde começar a instalar os totens.
 
-A equipe também definiu que o repositório seria `GS-Machine-Learning-2-26`, com o notebook executado também arquivado no Google Drive.
+A equipe também definiu que o repositório seria `GS-Machine-Learning-2-26`, separado do repositório de SOA, para que cada disciplina tenha um repositório com apenas o que lhe diz respeito.
 
 ### Como a resposta foi verificada na prática
 
@@ -143,13 +143,3 @@ A **validação espacial** (bloqueando uma região inteira de São Paulo por vez
 ### Como a resposta foi verificada na prática
 
 Todas as métricas acima são saídas do notebook executado, e podem ser reproduzidas rodando-o do início ao fim. O modelo final, os modelos de faixa e a folga conformal estão salvos em `ml/artefatos/modelo_espera.joblib`.
-
----
-
-## O que a equipe precisa confirmar antes da entrega
-
-- [ ] Cada integrante consegue explicar por que a divisão é agrupada por linha e o que aconteceria com uma divisão aleatória. **É a pergunta mais provável na avaliação.**
-- [ ] Cada integrante consegue explicar a origem dos dados e por que nenhum deles é simulado.
-- [ ] Cada integrante consegue ler o resultado para o cidadão: o que significam 7,6 minutos de erro médio e por que isso não é o mesmo que prever a chegada do ônibus.
-- [ ] Cada integrante consegue explicar por que trocamos a função-objetivo, e por que subestimar a espera é pior que superestimar.
-- [ ] O notebook foi executado do início ao fim na máquina de quem for gravar o vídeo.
