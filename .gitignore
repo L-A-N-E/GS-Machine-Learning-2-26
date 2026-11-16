@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Jupyter
+*.nbconvert.ipynb
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# ATENCAO: os arquivos abaixo FAZEM PARTE DA ENTREGA e NAO devem ser ignorados.
+#   ml/dados/gtfs/*.txt      dados reais e publicos da SPTrans
+#   ml/figuras/*.png         graficos do relatorio
+#   ml/artefatos/*           modelo e CSVs consumidos pelo backend
+# O unico arquivo do GTFS deliberadamente fora do repositorio e o shapes.txt (60 MB),
+# dispensavel para a analise. Ver ml/dados/README.md.
+ml/dados/gtfs/shapes.txt
