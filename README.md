@@ -131,13 +131,13 @@ Leitura completa, com limites e próximos passos, em [`RELATORIO_ML.md`](RELATOR
 
 ## Conexão com a CitizenTech
 
-Esta disciplina gera três artefatos consumidos pelas outras partes do S.B.P.:
+Esta disciplina gera três artefatos consumidos pelo restante do S.B.P.:
 
 | Artefato | O que contém | Quem consome |
 | :--- | :--- | :--- |
 | `modelo_espera.joblib` | Modelo central, os dois modelos de faixa e a folga conformal | Quem for gerar novas estimativas |
-| `espera_por_linha_hora.csv` | Espera estimada e faixa, por linha e hora | Backend de SOA — migração V6 e o painel do totem |
-| `prioridade_totens.csv` | As 21.933 paradas com grupo e posição na fila | Backend de SOA — migração V3 |
+| `espera_por_linha_hora.csv` | Espera estimada e faixa, por linha e hora | O painel do totem, que mostra a faixa ao cidadão |
+| `prioridade_totens.csv` | As 21.933 paradas com grupo e posição na fila | A fila de instalação dos totens |
 
 ## Uso de IA
 

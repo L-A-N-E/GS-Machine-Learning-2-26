@@ -22,7 +22,7 @@ Evitar a armadilha de treinar um modelo que apenas repete o que o GTFS já infor
 
 A equipe escolheu, entre três alternativas apresentadas, a combinação **tempo de espera (headway) mais agrupamento das paradas**, em vez de prever apenas o tempo de viagem entre paradas ou apenas o tempo de espera. O critério foi cobrir as duas perguntas que o projeto precisa responder: quanto o cidadão espera, e por onde começar a instalar os totens.
 
-A equipe também definiu que o repositório seria `GS-Machine-Learning-2-26`, separado do repositório de SOA, para que cada disciplina tenha um repositório com apenas o que lhe diz respeito.
+A equipe também definiu que o repositório seria `GS-Machine-Learning-2-26`, contendo apenas a análise e os artefatos que ela produz.
 
 ### Como a resposta foi verificada na prática
 
@@ -96,7 +96,7 @@ Foi conferido que a tabela das 18 combinações mostra o comportamento esperado 
 
 ### Finalidade
 
-Responder a segunda pergunta do trabalho — por onde começar a implantação — e produzir um artefato consumível pelo backend da disciplina de SOA.
+Responder a segunda pergunta do trabalho — por onde começar a implantação — e produzir um artefato consumível pelo backend do S.B.P.
 
 ### Problema encontrado e correção
 
@@ -108,7 +108,7 @@ Na mesma revisão foi corrigida uma afirmação do relatório que os dados não 
 
 Foi conferido que a silhueta é modesta para todos os valores de k testados, entre 0,21 e 0,26, com máximo em k = 2 — o que significa que as paradas formam um contínuo e não grupos nitidamente separados. A escolha de k = 4 foi mantida por razão operacional e **essa limitação está declarada no relatório**, em vez de omitida.
 
-O resultado foi exportado para `ml/artefatos/prioridade_totens.csv` com as 21.933 paradas classificadas, e sua integração com o backend foi verificada de ponta a ponta: a classificação chega ao banco de dados da aplicação de SOA e aparece na resposta da API.
+O resultado foi exportado para `ml/artefatos/prioridade_totens.csv` com as 21.933 paradas classificadas, e sua integração foi verificada de ponta a ponta: a classificação chega ao banco de dados do S.B.P. e aparece na resposta da API que alimenta o totem.
 
 ---
 

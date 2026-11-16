@@ -162,5 +162,5 @@ O modelo erra cerca de **7,6 minutos** ao estimar a espera de uma linha que nunc
 | Artefato | O que contém | Quem consome |
 | :--- | :--- | :--- |
 | `modelo_espera.joblib` | Modelo central, os dois modelos de faixa e a folga conformal | Quem gerar novas estimativas |
-| `espera_por_linha_hora.csv` | Espera estimada e faixa, por linha e hora | Painel do totem (backend de SOA) |
+| `espera_por_linha_hora.csv` | Espera estimada e faixa, por linha e hora | Painel do totem |
 | `prioridade_totens.csv` | As 21.933 paradas com grupo e posição na fila | Fila de instalação dos totens |
