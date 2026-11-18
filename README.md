@@ -20,7 +20,7 @@ FIAP · Engenharia de Software · 3º ano de Fev
 | **Indicador de impacto** | Erro médio, em minutos, da espera estimada (**7,6 min**, contra 10,5 min da linha de base, sem viés sistemático); nº de paradas de alta espera na fila de prioridade (**2.763**) |
 | **ODS conectados** | ODS 9, ODS 10, ODS 11 |
 | **Integrantes** | Alice Santos Bulhões (RM554499) · Eduardo Oliveira Cardoso Madid (RM556349) · Guilherme da Cunha Melo (RM555310) · Nicolas Haubricht Hainfellner (RM556259) |
-| **Vídeo (até 5 min, não listado)** | https://youtu.be/0ISHAtgR2Fc |
+| **Vídeo** | https://youtu.be/0ISHAtgR2Fc |
 
 ---
 
