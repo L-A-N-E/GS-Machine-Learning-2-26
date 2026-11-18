@@ -1,13 +1,13 @@
-# S.B.P. - Smart Bus Point | Entrega de Inteligencia Artificial & Machine Learning
-# Global Solution 2026.2 - CitizenTech - FIAP
+# S.B.P. — Smart Bus Point · Entrega de Inteligência Artificial & Machine Learning
+# Global Solution 2026.2 — Desafio CitizenTech · FIAP
 #
-# Instalacao:
+# Instalação:
 #   python -m venv .venv
 #   .venv\Scripts\activate        (Windows)
 #   source .venv/bin/activate     (Linux / macOS)
 #   pip install -r requirements.txt
 #
-# Versoes fixadas nas que foram efetivamente usadas para executar o notebook.
+# Versões fixadas nas que foram efetivamente usadas para executar o notebook.
 
 pandas==3.0.3
 numpy==2.4.6
@@ -18,10 +18,10 @@ matplotlib==3.10.9
 seaborn==0.13.2
 joblib==1.5.3
 
-# Execucao do notebook
+# Execução do notebook
 ipykernel==7.4.0
 nbconvert==7.17.2
 
-# Apenas para ABRIR o notebook na interface grafica (versao livre).
-# Quem for somente ler o notebook ja executado nao precisa instalar.
+# Necessário apenas para abrir o notebook na interface gráfica (versão livre).
+# Quem for somente ler o notebook já executado não precisa instalar.
 jupyterlab

@@ -11,9 +11,9 @@ FIAP — Engenharia de Software, 3º ano de Fev
 
 ## 1. O problema e a pergunta de ML
 
-O **S.B.P. (Smart Bus Point)** transforma a parada de ônibus em um ponto de informação acessível: um totem na calçada, um aplicativo e um site, ligados por um QR Code. O cidadão que ele atende é quem depende do ônibus — trabalhador, estudante, idoso, pessoa com deficiência visual — e chega ao ponto **sem saber quanto tempo ainda vai esperar**. Mais da metade dos passageiros aponta a espera como principal motivo de insatisfação, e o ônibus urbano perdeu mais de 44% dos pagantes em doze anos (NTU): a incerteza empurra o cidadão para o carro e para o aplicativo de transporte.
+O **S.B.P. (Smart Bus Point)** transforma a parada de ônibus em um ponto de informação acessível: um totem na calçada, um aplicativo e um site, ligados por um QR Code. O cidadão atendido é quem depende do ônibus — trabalhador, estudante, idoso, pessoa com deficiência visual — e chega ao ponto **sem saber quanto tempo ainda vai esperar**. Mais da metade dos passageiros aponta a espera como principal motivo de insatisfação, e o ônibus urbano perdeu mais de 44% dos pagantes em doze anos (NTU): a incerteza desloca demanda para o automóvel e para os aplicativos de transporte individual.
 
-O S.B.P. resolve a maior parte disso com dado publicado e telemetria. Sobra o caso que a infraestrutura não cobre — a parada sem dado publicado, o momento em que a conexão cai. Daí a pergunta:
+A maior parte desse problema se resolve com dado publicado e telemetria. Resta o caso que a infraestrutura não cobre — a parada sem dado publicado e a indisponibilidade de conexão. Daí a pergunta:
 
 > **Dado o desenho de uma linha de ônibus — extensão, número de paradas, região, duração, integrações — e o horário do dia, qual é o intervalo médio de espera, em minutos, entre dois ônibus dessa linha?**
 
@@ -33,17 +33,17 @@ E uma segunda, não supervisionada, para apoiar a implantação:
 
 **Nenhum dado foi simulado e nenhum dado pessoal é usado.** O GTFS descreve a oferta — linhas, paradas e horários —, não passageiros.
 
-O alvo vem de `frequencies.txt`: para a maior parte da rede a SPTrans não publica o horário de cada ônibus, e sim a **frequência** — de quantos em quantos segundos o veículo passa, por faixa de uma hora. É exatamente o que o passageiro sente na calçada.
+O alvo vem de `frequencies.txt`. Para a maior parte da rede a SPTrans não publica o horário de cada ônibus, e sim a **frequência**: de quantos em quantos segundos o veículo passa, por faixa de uma hora. É a grandeza que o passageiro percebe no ponto.
 
-As tabelas foram unidas por `trip_id` e `route_id`, e delas saíram atributos que descrevem a **forma da linha** (extensão somando Haversine entre paradas consecutivas, nº de paradas, duração, velocidade, sinuosidade, distância do centro, área de operação, linha noturna, integrações) e o **momento do dia** (hora, também em seno e cosseno, porque 23h e 0h são vizinhas; período; tipo de dia). Acrescentamos a **densidade urbana da rede**: com uma árvore k-d sobre as 22.273 paradas, contamos quantas paradas e linhas existem num raio de 500 m e 1 km de cada ponto do trajeto. É o indício indireto de demanda que o GTFS permite construir.
+As tabelas foram unidas por `trip_id` e `route_id`, e delas derivaram atributos que descrevem a **forma da linha** (extensão somando Haversine entre paradas consecutivas, nº de paradas, duração, velocidade, sinuosidade, distância do centro, área de operação, linha noturna, integrações) e o **momento do dia** (hora, também em seno e cosseno, dado o caráter cíclico da variável; período; tipo de dia). A esses somou-se a **densidade urbana da rede**: com uma árvore k-d sobre as 22.273 paradas, foram contadas quantas paradas e linhas existem num raio de 500 m e 1 km de cada ponto do trajeto — o indício indireto de demanda que o GTFS permite construir.
 
-Mantivemos apenas `route_type = 3` (ônibus). Ausentes de velocidade (17) e sinuosidade (4.373, de viagens circulares) foram preenchidos pela mediana. Sem duplicatas e sem valores fora de faixa.
+Foi mantido apenas `route_type = 3` (ônibus). Ausentes de velocidade (17) e sinuosidade (4.373, de viagens circulares) foram preenchidos pela mediana. Sem duplicatas e sem valores fora de faixa.
 
-**Dataset final: 39.777 registros · 1.309 linhas · 2.236 viagens · 29 atributos.** A exploração confirma três padrões reais da cidade: a espera mediana cai para 15 min nos picos e **dobra na madrugada**; a área Leste tem mediana de 12 min contra 20 de Oeste, Sul e Nordeste; e as **linhas noturnas do Corujão têm mediana de 60 min**, contra 15 das diurnas.
+**Dataset final: 39.777 registros · 1.309 linhas · 2.236 viagens · 29 atributos.** A exploração confirma três padrões da rede: a espera mediana cai para 15 min nos picos e **dobra na madrugada**; a área Leste tem mediana de 12 min contra 20 de Oeste, Sul e Nordeste; e as **linhas noturnas do Corujão têm mediana de 60 min**, contra 15 das diurnas.
 
-## 3. Divisão treino/teste: a decisão central
+## 3. Divisão treino/teste
 
-Cada linha aparece cerca de 18 vezes (uma por faixa de hora) e quase todos os atributos são constantes dentro dela. Uma divisão **aleatória** colocaria a mesma linha dos dois lados: o modelo decoraria o patamar de cada linha e a métrica não mediria generalização. A divisão é **agrupada por `route_id`** (`GroupShuffleSplit`, 80/20), e o notebook verifica e imprime a interseção.
+Cada linha aparece cerca de 18 vezes (uma por faixa de hora) e quase todos os atributos são constantes dentro dela. Uma divisão **aleatória** colocaria a mesma linha dos dois lados, e a métrica mediria memorização do patamar de cada linha, não generalização. A divisão é **agrupada por `route_id`** (`GroupShuffleSplit`, 80/20), e o notebook verifica e imprime a interseção.
 
 | | Registros | Linhas |
 | :--- | ---: | ---: |
@@ -51,9 +51,9 @@ Cada linha aparece cerca de 18 vezes (uma por faixa de hora) e quase todos os at
 | Teste | 7.854 | 262 |
 | **Em comum** | — | **0** |
 
-## 4. Até onde dá para chegar: a análise de teto
+## 4. Teto do problema
 
-Antes de treinar, decompusemos a variância do alvo: **53,7% está no patamar de cada linha** (118,2) e 46,3% no perfil horário dentro dela (102,0). O problema difícil não é descobrir como a espera varia ao longo do dia — é descobrir **o patamar de uma linha nunca vista**. Oráculos delimitam o campo de jogo, todos no mesmo conjunto de teste:
+Antes do treino, a variância do alvo foi decomposta: **53,7% está no patamar de cada linha** (118,2) e 46,3% no perfil horário dentro dela (102,0). A dificuldade não está em descrever a variação da espera ao longo do dia, mas em inferir **o patamar de uma linha nunca vista**. Oráculos delimitam o intervalo possível, todos avaliados no mesmo conjunto de teste:
 
 | Previsor | R² | MAE |
 | :--- | ---: | ---: |
@@ -63,13 +63,13 @@ Antes de treinar, decompusemos a variância do alvo: **53,7% está no patamar de
 | ORÁCULO: patamar verdadeiro da linha | 0,554 | 6,42 |
 | ORÁCULO: patamar verdadeiro + perfil | **0,625** | 5,66 |
 
-Qualquer modelo honesto precisa superar 0,350 e jamais alcançará 0,625.
+Um modelo sem acesso à identidade da linha precisa superar 0,350 e não pode alcançar 0,625.
 
 ## 5. Escolha do modelo e da função-objetivo
 
-Quatro modelos na mesma divisão: linha de base (MAE 10,48), Ridge (8,43), Random Forest (8,28) e **XGBoost (7,47)**. O XGBoost vence e é três vezes mais rápido que a Random Forest — o que importa porque seria treinado 90 vezes na busca.
+Quatro modelos na mesma divisão: linha de base (MAE 10,48), Ridge (8,40), Random Forest (8,18) e **XGBoost (7,41)**. O XGBoost vence e é três vezes mais rápido que a Random Forest, o que pesa porque seria treinado 90 vezes na busca.
 
-A escolha da **função-objetivo**, porém, não é técnica: é sobre que erro machuca o cidadão.
+A escolha da **função-objetivo** depende de qual erro é mais custoso para o cidadão, e não apenas da métrica agregada.
 
 | Função-objetivo | MAE | RMSE | R² | **Viés** | Subestima |
 | :--- | ---: | ---: | ---: | ---: | ---: |
@@ -78,11 +78,11 @@ A escolha da **função-objetivo**, porém, não é técnica: é sobre que erro 
 | Quantil 0,65 | 8,01 | 11,46 | 0,43 | +0,40 | 40,2% |
 | **Erro quadrático (média)** | 7,59 | **10,64** | **0,51** | **−0,09** | 41,2% |
 
-O erro absoluto minimiza o MAE, mas **subestima a espera em 2 minutos na média**, porque a distribuição é assimétrica. Dizer "uns 10 minutos" quando são 20 faz a pessoa ficar parada achando que o ônibus está chegando: **um modelo que erra sistematicamente para baixo engana o passageiro.** O erro quadrático zera o viés por 0,12 min a mais de MAE, e ainda melhora RMSE e R². É o adotado.
+O erro absoluto minimiza o MAE, mas **subestima a espera em 2 minutos na média**, porque a distribuição é assimétrica à direita. Anunciar 10 minutos quando a espera é de 20 mantém o passageiro no ponto sob premissa falsa; o erro para cima apenas o surpreende. O erro quadrático zera o viés ao custo de 0,12 min de MAE, e melhora RMSE e R². É o adotado.
 
 ## 6. Treino com diferentes hiperparâmetros
 
-Grade completa de **3 hiperparâmetros** e **18 combinações**: `max_depth` (3, 5, 7) × `learning_rate` (0,03 · 0,08 · 0,15) × `n_estimators` (300, 600). Validação cruzada com **`GroupKFold` de 5 dobras, somente no treino**, mantendo o agrupamento por linha dentro das dobras — sem isso o vazamento voltaria por dentro da validação. **O teste não participou de nenhuma decisão.** Foram 90 ajustes em 56 segundos, e a tabela completa no notebook mostra o sobreajuste esperado: as configurações mais profundas e com passo maior ajustam melhor o treino e pioram na validação.
+Grade completa de **3 hiperparâmetros** e **18 combinações**: `max_depth` (3, 5, 7) × `learning_rate` (0,03 · 0,08 · 0,15) × `n_estimators` (300, 600). Validação cruzada com **`GroupKFold` de 5 dobras, somente no treino**, mantendo o agrupamento por linha dentro das dobras — sem isso o vazamento reapareceria pela validação. **O teste não participou de nenhuma decisão.** Foram 90 ajustes em 128 segundos, e a tabela completa no notebook mostra o sobreajuste esperado: as configurações mais profundas e com passo maior ajustam melhor o treino e pioram na validação.
 
 **Melhor combinação:** `max_depth=7`, `learning_rate=0,03`, `n_estimators=300`.
 
@@ -95,38 +95,38 @@ Grade completa de **3 hiperparâmetros** e **18 combinações**: `max_depth` (3,
 | R² | 0,80 | **0,507** | −0,02 |
 | Viés (min) | — | **−0,09** | — |
 
-**Redução de 27,6% no erro sobre a linha de base.** 46,2% das previsões erram até 5 min e 75,9% até 10 min. O R² de 0,507 fica entre o teto do trivial (0,350) e o absoluto (0,625): o modelo recupera cerca de **58% do que havia para ganhar**.
+**Redução de 27,6% no erro sobre a linha de base.** 46,2% das previsões erram até 5 min e 75,9% até 10 min. O R² de 0,507 fica entre o teto do trivial (0,350) e o absoluto (0,625): o modelo recupera cerca de **58% da margem disponível**.
 
-Os atributos mais usados são madrugada, operação aos domingos, linha noturna e prefixo N. O modelo aprendeu sobretudo o **regime de operação** — quando e que tipo de linha —, muito menos a geometria do trajeto.
+Os atributos mais usados são madrugada, operação aos domingos, linha noturna e prefixo N. O modelo aprendeu sobretudo o **regime de operação** — quando e que tipo de linha —, e muito menos a geometria do trajeto.
 
-### 7.1 Os limites, medidos
+### 7.1 Limites medidos
 
-Cinco experimentos delimitam o que o modelo não faz. Todos estão no notebook, inclusive o que deu negativo.
+Cinco experimentos delimitam o que o modelo não faz. Todos estão no notebook, inclusive o de resultado negativo.
 
 | Experimento | O que mediu | Resultado |
 | :--- | :--- | :--- |
 | **Overfitting** | treino contra teste | R² 0,80 × **0,507**. O modelo memoriza parte do patamar das linhas de treino; a busca reduziu a distância, mas não poderia eliminá-la |
-| **Vazamento** | o mesmo modelo com divisão aleatória | MAE **5,28** e R² 0,70, com **1.207 linhas nos dois lados**. O número otimista seria falso: mede repetir o que já se viu |
-| **Ablação da densidade** | com e sem o bloco de densidade urbana | R² **0,462 → 0,507** (+0,045). Ganho real, mas modesto: indício indireto não substitui a variável que falta |
-| **Linhas vizinhas** | correlação entre a espera de uma linha e a das que dividem suas paradas, em 1.306 linhas | **+0,089**, R² de 0,008. **Não funcionou.** Duas linhas na mesma rua podem ter intervalos opostos, porque uma é troncal e a outra alimentadora |
+| **Vazamento** | o mesmo modelo com divisão aleatória | MAE **5,28** e R² 0,70, com **1.207 linhas nos dois lados**. O número otimista seria falso: mede a repetição do que já foi visto |
+| **Ablação da densidade** | com e sem o bloco de densidade urbana | R² **0,462 → 0,507** (+0,045). Ganho real, mas modesto: indício indireto não substitui a variável ausente |
+| **Linhas vizinhas** | correlação entre a espera de uma linha e a das que dividem suas paradas, em 1.306 linhas | **+0,089**, R² de 0,008. **Sem poder preditivo.** Duas linhas na mesma rua podem ter intervalos opostos, por serem uma troncal e outra alimentadora |
 | **Validação espacial** | bloqueando uma região inteira de São Paulo por vez | R² cai para **0,26–0,34**. Parte do acerto vinha de conhecer outras linhas da mesma região |
 
-As duas últimas se explicam juntas: **a oferta não se contagia entre linhas vizinhas**, o que confirma por outro caminho o diagnóstico da seção 4. E a validação espacial corrige uma afirmação que fazíamos: para *uma linha nova numa cidade conhecida*, 0,507 é o número honesto; para *uma cidade sem dado nenhum*, é 0,30. Registramos os dois.
+Os dois últimos se explicam em conjunto: **a oferta não se propaga entre linhas vizinhas**, o que confirma por outro caminho o diagnóstico da seção 4. A validação espacial também corrige uma afirmação anterior do relatório: para *uma linha nova em uma cidade já mapeada*, 0,507 é a métrica aplicável; para *uma cidade sem dado algum*, 0,30. Os dois números ficam registrados.
 
-## 8. Uma faixa, e não um número
+## 8. Faixa de predição calibrada
 
-Anunciar "14 minutos" dá uma precisão que o modelo não tem; anunciar **"entre 8 e 25 minutos"** é honesto e continua útil. Dois modelos de quantil dão os extremos, mas quantis estimados não garantem cobertura — é preciso calibrá-los. Usamos **predição conformal**, separando parte do treino para calibração, sempre agrupada por linha:
+Anunciar "14 minutos" atribui ao modelo uma precisão que ele não tem; anunciar **"entre 8 e 25 minutos"** preserva a utilidade da informação. Dois modelos de quantil fornecem os extremos, mas quantis estimados não garantem cobertura e precisam de calibração. Foi aplicada **predição conformal**, separando parte do treino para calibração, sempre agrupada por linha:
 
 | | Cobertura | Largura mediana |
 | :--- | ---: | ---: |
 | Quantis crus | 69,9% | 19,5 min |
 | **Conformalizado** | **79,8%** | 21,8 min |
 
-Com uma folga de 1,14 min, a cobertura observada passa a corresponder à prometida. O totem anuncia uma faixa e **diz com que confiança**.
+Com uma folga de 1,14 min, a cobertura observada passa a corresponder à prometida. O totem anuncia a faixa e **a confiança associada a ela**.
 
 ## 9. Onde instalar os totens — KMeans + PCA
 
-As 21.933 paradas com perfil completo foram descritas por 9 atributos de oferta e espera, padronizadas, reduzidas por **PCA** (6 componentes, 93,1% da variância) e agrupadas por **KMeans**. A silhueta é modesta para todo k (0,21–0,26, máximo em k=2): as paradas formam um **contínuo**, não ilhas. Adotamos k=4 por razão operacional — k=2 só separaria "muita" de "pouca" oferta — e tratamos os grupos como faixas de um espectro.
+As 21.933 paradas com perfil completo foram descritas por 9 atributos de oferta e espera, padronizadas, reduzidas por **PCA** (6 componentes, 93,1% da variância) e agrupadas por **KMeans**. A silhueta é modesta para todo k (0,21–0,26, máximo em k=2): as paradas formam um **contínuo**, não grupos separados. Adotou-se k=4 por razão operacional — k=2 apenas separaria "muita" de "pouca" oferta — e os grupos são tratados como faixas de um espectro.
 
 | Grupo | Paradas | Linhas/parada | Espera no pico | Prioridade |
 | :--- | ---: | ---: | ---: | :--- |
@@ -135,32 +135,32 @@ As 21.933 paradas com perfil completo foram descritas por 9 atributos de oferta 
 | Corredor de bairro | 7.156 | 3,53 | 17,1 min | 3 — expansão |
 | Parada integrada ao metrô | 8.099 | 2,49 | 14,5 min | 4 — já bem servida |
 
-O que separa os grupos **não é a distância do centro** — os quatro ficam entre 10 e 17 km. É a **oferta**: o hub concentra ~11 linhas e atende mais de uma área, enquanto a parada isolada tem menos de 2 linhas e quase 37 min de espera no pico. Vale a ressalva: o agrupamento mede a oferta, não **quantas pessoas** usam cada parada. Pôr equidade à frente de alcance foi uma escolha de política da equipe, não um resultado do dado.
+O que separa os grupos **não é a distância do centro** — os quatro ficam entre 10 e 17 km —, mas a **oferta**: o hub concentra cerca de 11 linhas e atende mais de uma área, enquanto a parada isolada tem menos de 2 linhas e quase 37 min de espera no pico. Cabe a ressalva: o agrupamento mede a oferta, não **quantas pessoas** usam cada parada. Colocar equidade à frente de alcance foi uma escolha de política da equipe, não um resultado do dado.
 
-## 10. Conclusão: o que isso significa para o cidadão
+## 10. Conclusão
 
-O modelo erra cerca de **7,6 minutos** ao estimar a espera de uma linha que nunca viu, contra 10,5 de quem chuta a mediana da cidade, e **sem viés sistemático**. Não é precisão para anunciar "faltam 4 minutos" — essa informação continua vindo do dado publicado e da telemetria.
+O modelo erra cerca de **7,6 minutos** ao estimar a espera de uma linha que nunca viu, contra 10,5 da mediana da cidade, e **sem viés sistemático**. Não é precisão para anunciar "faltam 4 minutos" — essa informação continua vindo do dado publicado e da telemetria.
 
-É precisão suficiente para **dizer em que regime de espera o cidadão está**. Acertar que ali, àquela hora, se espera cerca de 10 minutos e não 40 muda a decisão de quem está na calçada: esperar, caminhar até outro ponto ou procurar outro modal. É a diferença entre não ter informação nenhuma e ter uma ordem de grandeza confiável, com uma faixa de 80% ao redor dela.
+É precisão suficiente para **identificar o regime de espera**. Distinguir uma espera de cerca de 10 minutos de uma de 40 altera a decisão de quem está na calçada: esperar, caminhar até outro ponto ou procurar outro modal. A alternativa atual é a ausência de informação.
 
-**Por que paramos aqui.** As seções 4 e 7.1 respondem juntas. Mais da metade da variância está no patamar de cada linha, e esse patamar **não é inferível da estrutura da rede**. Não é falta de ajuste nem de um modelo mais sofisticado: é uma variável que não existe no dado público — a demanda e a frota alocada àquela linha. Reconhecer o limite vale mais do que seguir acrescentando atributos que não mudam o resultado.
+**Por que o trabalho para aqui.** As seções 4 e 7.1 respondem em conjunto. Mais da metade da variância está no patamar de cada linha, e esse patamar **não é inferível da estrutura da rede**. Não se trata de ajuste insuficiente nem de falta de um modelo mais sofisticado: trata-se de uma variável ausente no dado público — a demanda e a frota alocada àquela linha. Reconhecer o limite tem mais valor do que acrescentar atributos sem efeito no resultado.
 
 **Impacto medido:** erro médio da espera estimada (**7,6 min**) e nº de paradas de alta espera na fila de prioridade 1 (**2.763**).
 
-**Próximo passo, agora com alvo claro.** O limite diz exatamente que dado buscar: (1) **API Olho Vivo** da SPTrans, que muda o alvo de espera programada para realizada; (2) **Censo 2022 do IBGE**, população e renda por setor censitário cruzados com a coordenada da parada, o melhor proxy público de demanda; (3) **bilhetagem agregada por linha**, se publicada — a medida direta da variável que falta.
+**Próximo passo.** O limite indica que dado buscar: (1) **API Olho Vivo** da SPTrans, que muda o alvo de espera programada para realizada; (2) **Censo 2022 do IBGE**, população e renda por setor censitário cruzados com a coordenada da parada, o melhor proxy público de demanda; (3) **bilhetagem agregada por linha**, se publicada — a medida direta da variável ausente.
 
 ---
 
 ### Conexão com os ODS
 
-- **ODS 11 — Cidades e comunidades sustentáveis:** informação confiável na parada reduz a incerteza que empurra o passageiro para modais individuais.
-- **ODS 10 — Redução das desigualdades:** a fila prioriza as paradas isoladas de longa espera; o totem atende quem não tem smartphone, bateria ou dados móveis.
-- **ODS 9 — Indústria, inovação e infraestrutura:** a solução segue funcionando fora do cenário ideal de conectividade, com dado aberto e modelo próprio.
+- **ODS 11 — Cidades e comunidades sustentáveis:** informação confiável na parada reduz a incerteza que desloca demanda para modais individuais.
+- **ODS 10 — Redução das desigualdades:** a fila prioriza as paradas isoladas de longa espera, e o totem atende quem não tem smartphone, bateria ou dados móveis.
+- **ODS 9 — Indústria, inovação e infraestrutura:** a solução opera fora do cenário ideal de conectividade, com dado aberto e modelo próprio.
 
 ### Artefatos para o restante da CitizenTech
 
 | Artefato | O que contém | Quem consome |
 | :--- | :--- | :--- |
-| `modelo_espera.joblib` | Modelo central, os dois modelos de faixa e a folga conformal | Quem gerar novas estimativas |
+| `modelo_espera.joblib` | Modelo central, os dois modelos de faixa e a folga conformal | Geração de novas estimativas |
 | `espera_por_linha_hora.csv` | Espera estimada e faixa, por linha e hora | Painel do totem |
 | `prioridade_totens.csv` | As 21.933 paradas com grupo e posição na fila | Fila de instalação dos totens |

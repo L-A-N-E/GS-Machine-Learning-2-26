@@ -13,8 +13,6 @@ Toda a análise do S.B.P. usa **dados reais e públicos**. **Nenhum dado foi sim
 | **Data de obtenção** | 14/11/2026 |
 | **Licença** | Dado público, disponibilizado pela SPTrans para uso em aplicações de transporte |
 
-O **GTFS** (*General Transit Feed Specification*) é o formato aberto adotado internacionalmente para publicar dados de transporte público. É o mesmo conjunto que alimenta aplicativos como Google Maps e Moovit.
-
 ## Arquivos em `gtfs/`
 
 | Arquivo | Registros | Conteúdo | Papel na análise |
@@ -28,13 +26,13 @@ O **GTFS** (*General Transit Feed Specification*) é o formato aberto adotado in
 | `agency.txt` | 1 | Operadora (SPTRANS) | Documentação |
 | `fare_attributes.txt` / `fare_rules.txt` | 6 / 7.187 | Tarifas e regras de integração | Não usados nesta análise |
 
-### Por que `shapes.txt` não está aqui
+### Ausência de `shapes.txt`
 
-O arquivo `shapes.txt` do GTFS original (60 MB) contém a geometria desenhada do traçado de cada rota. Ele **não é necessário** para esta análise — a extensão de cada linha é calculada pela soma das distâncias entre paradas consecutivas, usando a fórmula de Haversine sobre as coordenadas de `stops.txt` — e foi removido para manter o repositório em tamanho razoável.
+O `shapes.txt` do GTFS original (60 MB) contém a geometria desenhada do traçado de cada rota. Ele **não é necessário** aqui — a extensão de cada linha é calculada pela soma das distâncias entre paradas consecutivas, por Haversine sobre as coordenadas de `stops.txt` — e foi removido para manter o repositório em tamanho razoável.
 
 Para reproduzir com o arquivo completo, baixe o GTFS na área de desenvolvedores da SPTrans e descompacte em `gtfs/`.
 
-## Entendendo a variável-alvo
+## Variável-alvo
 
 Para a maior parte da rede municipal, a SPTrans **não publica o horário de cada ônibus**: publica a **frequência**. Cada registro de `frequencies.txt` informa, para uma viagem e uma faixa de uma hora, de quantos em quantos segundos o veículo passa.
 
@@ -44,7 +42,7 @@ trip_id      start_time  end_time  headway_secs
 1012-10-0    01:00:00    01:59:00  3600           →  passa de 60 em 60 minutos
 ```
 
-É exatamente o número que o passageiro sente na calçada. Por isso o alvo do modelo é `headway_secs` convertido em minutos (`headway_min`), com valores entre 1 e 60 minutos e mediana de 20 minutos.
+É a grandeza que o passageiro percebe no ponto. O alvo do modelo é, portanto, `headway_secs` convertido em minutos (`headway_min`), com valores entre 1 e 60 minutos e mediana de 20 minutos.
 
 ## Artefatos gerados
 
